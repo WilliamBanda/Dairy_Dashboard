@@ -1,0 +1,371 @@
+
+---
+title: "Dairy Production"
+format: 
+  dashboard:
+    nav-buttons: [github]
+    github: https://github.com/WilliamBanda/Data-Dashboards-User-Perception
+theme: [Cerulean, theme/custom.scss]
+fig-width: 4
+fig-asp: 0.9
+params:
+  month: 
+  year: 
+  threshold_diff: 0.01
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: load-packages
+#| message: false
+#| warning: false
+#| include: false
+
+options(repos = "https://cran.rstudio.com")
+
+# Suppress messages and warnings globally
+suppressPackageStartupMessages({
+  install.packages("reshape2", quiet = TRUE)
+  install.packages(c("writexl", "viridis", "shiny", "ggplot2"), quiet = TRUE)
+  
+  library(tidyverse)
+  library(readr)
+  library(dplyr)
+  library(openxlsx)
+  library(ggplot2)
+  library(shiny)
+  library(writexl)
+  library(plotly)
+  library(reshape2)
+  library(readxl)
+  library(scales)
+  library(DT)
+  library(gt)
+  library(viridis)
+  library(lubridate)
+})
+
+```
+
+```{r}
+#| label: load-data
+#| message: false
+
+Data <- read_excel("C:/Users/WilliamBanda1/Documents/MRP/tidy_data.xlsx")
+Data <- Data %>%
+  filter(format(as.Date(date), "%Y") %in% 2018:2023)
+Data$year <- factor(year(Data$date))
+
+```
+
+```{r}
+#| label: values
+#| results: hide
+
+# Calculate average milk produced from 2018-2023
+avg_milk_produced <- Data %>%
+  summarize(avg_milk_produced = mean(milk_produced, na.rm = TRUE)) %>%
+  pull(avg_milk_produced) %>% round(digits = 1)
+
+# Calculate average milk per cow from 2018-2023
+avg_milk_per_cow <- Data %>%
+  summarize(avg_milk_per_cow = mean(milk_per_cow, na.rm = TRUE)) %>%
+  pull(avg_milk_per_cow) %>% round(digits = 1)
+
+# Calculate average protein % from 2018-2023
+avg_protein <- Data %>%
+  summarize(avg_protein = mean(protein, na.rm = TRUE)) %>%
+  pull(avg_protein) %>% round(digits = 1)
+
+# Calculate average fat from 2018-2023 and round to one decimal point
+avg_fat <- Data %>%
+  summarize(avg_fat = round(mean(fat, na.rm = TRUE), 1)) %>%
+  pull(avg_fat)
+
+```
+# About
+
+## Row {.flow}
+### column
+::: card
+::: card-header
+About this Project and Data
+:::
+::: card-body
+This project aims to address challenges of farm data management through organizing data and improving data awareness and accessibility. The aim is to improve accessibility, usability, compatibility, and convenience to end users or other stakeholders. 
+
+The data used in this dashboard is from the Harper Adams Future Farm Dairy Unit. The data has dairy production and milk quality variables recorded on daily basis from 2018 to 2023.
+
+[<i class="bi bi-github"></i> Source code](https://github.com/WilliamBanda/Dairy_Dashboard)
+
+:::
+:::
+
+### column
+::: card
+::: card-header
+
+Follow These Steps to Navigate this Dashboard 
+:::
+::: card-body
+Step 1: Click on the Stats tab and take a glance of the types of graphs, colours and texts used.
+
+Step 2: Try to interact with the graphs by hovering on top of one of the graphs with the cursor  and try to click on the extend button at the bottom right corner of the graph and hover through the graph.
+
+Step 3: Click on the Data tab and take a glance of the data and the dictionary, try click the download data button or the download dictionary button.
+
+Can you help answer the research questions?
+:::
+:::
+
+# Stats
+## Row {height=20%}
+
+```{r}
+#| content: valuebox
+#| title: "Total Milk Produced (kg)"
+
+list(
+  color = "purple",
+  value = avg_milk_produced
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Average Milk per Day (kg)"
+
+list(
+  color = "pink",
+  value = avg_milk_per_cow
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Milk Quality (Protein %)"
+
+list(
+  color = "cyan",
+  value = avg_protein
+)
+```
+
+```{r}
+#| component: valuebox
+#| title: "Fat % Average"
+
+list(
+  color = "red",
+  value = avg_fat
+)
+```
+
+## Row {height=50%}
+
+```{r}
+#| title: "Daily Average Milk per Cow per Year"
+
+# Extract year from the date column
+Data$year <- lubridate::year(Data$date)
+
+# Define a color palette
+palette <- c("blue", "red", "green", "purple", "orange", "brown")
+
+# Determine the maximum and minimum values for the y-axis
+max_milk_per_cow <- max(Data$milk_per_cow, na.rm = TRUE)
+min_milk_per_cow <- min(Data$milk_per_cow, na.rm = TRUE)
+
+# Create the boxplot
+p <- Data %>%
+  filter(milk_per_cow < 299) %>%  # Adjust the filter condition as needed
+  ggplot(aes(x = factor(year), y = milk_per_cow, fill = factor(year))) +
+  geom_boxplot(outlier.shape = 16, outlier.size = 1, lwd = 0.1) +  # Add outliers and set line width
+  geom_jitter(width = 0.2, alpha = 0.5) +  # Add data points with jitter
+  geom_hline(yintercept = max_milk_per_cow, linetype = "dashed", color = "red") +  # Line at max value
+  geom_hline(yintercept = min_milk_per_cow, linetype = "dashed", color = "blue") +  # Line at min value
+  labs(x = "Year", y = "Milk per Cow") +  # Update the y-axis label
+  scale_fill_manual(values = palette) +  # Apply the color palette
+  theme_bw() +
+  theme(legend.position = "none") +  # Remove the legend
+  scale_y_continuous(limits = c(min_milk_per_cow - 0.1 * (max_milk_per_cow - min_milk_per_cow),
+                                max_milk_per_cow + 0.1 * (max_milk_per_cow - min_milk_per_cow)),
+                     expand = c(0, 0))  # Adjust y-axis limits to increase box size
+
+print(p)
+
+```
+
+### Column
+
+```{r}
+#| title: "Yearly Average Protein Percentage"
+
+# Extract year from the date column
+Data$year <- lubridate::year(Data$date)
+
+# Define a color palette
+palette <- c("blue", "red", "green", "purple", "orange", "brown")
+
+# Determine the maximum and minimum values for the y-axis
+max_protein <- max(Data$protein, na.rm = TRUE)
+min_protein <- min(Data$protein, na.rm = TRUE)
+
+# Set limits for y-axis
+lower_limit <- 2.5
+upper_limit <- 5
+
+# Create the boxplot
+p <- Data %>%
+  filter(protein <= 4) %>%  # Filter data points up to 4
+  ggplot(aes(x = factor(year), y = protein, fill = factor(year))) +
+  geom_boxplot(outlier.shape = 16, outlier.size = 1, lwd = 0.1) +  # Add outliers and set line width
+  geom_jitter(width = 0.2, alpha = 0.5) +  # Add data points with jitter
+  labs(x = "Year", y = "Protein %") +
+  scale_fill_manual(values = palette) +  # Apply the color palette
+  theme_bw() +
+  theme(legend.position = "none") +  # Remove the legend
+  scale_y_continuous(limits = c(lower_limit, upper_limit),
+                     expand = c(0, 0)) +  # Set y-axis limits
+  geom_hline(yintercept = max_protein, linetype = "dashed", color = "red") +  # Add maximum value line
+  geom_hline(yintercept = min_protein, linetype = "dashed", color = "blue")   # Add minimum value line
+
+print(p)
+
+
+```
+### Column
+```{r}
+#| title: Yearly Average Fat Percentage
+
+# Extract year from the date column
+Data$year <- lubridate::year(Data$date)
+
+# Define a color palette
+palette <- c("blue", "red", "green", "purple", "orange", "brown")
+
+# Determine the maximum and minimum values for the y-axis
+max_fat <- max(Data$fat, na.rm = TRUE)
+min_fat <- min(Data$fat, na.rm = TRUE)
+
+# Create the boxplot
+p <- Data %>%
+  filter(fat < 299) %>%
+  ggplot(aes(x = factor(year), y = fat, fill = factor(year))) +
+  geom_boxplot(outlier.shape = 16, outlier.size = 1, lwd = 0.1) +  # Add outliers and set line width
+  geom_jitter(width = 0.2, alpha = 0.5) +  # Add data points with jitter
+  labs(x = "Year", y = "Fat %") +
+  scale_fill_manual(values = palette) +  # Apply the color palette
+  theme_bw() +
+  theme(legend.position = "none") +  # Remove the legend
+  scale_y_continuous(limits = c(min_fat - 0.1 * (max_fat - min_fat), max_fat + 0.1 * (max_fat - min_fat)),
+                     expand = c(0, 0)) +  # Adjust y-axis limits to increase box size
+  geom_hline(yintercept = max_fat, linetype = "dashed", color = "red") +  # Add maximum value line
+  geom_hline(yintercept = min_fat, linetype = "dashed", color = "blue")   # Add minimum value line
+
+print(p)
+
+```
+# Data
+
+```{r}
+
+# Load required libraries
+# Sample data
+Data <- data.frame(
+  Date = Sys.Date() - 1:100,
+  CowsInMilk = sample(100:200, 100, replace = TRUE),
+  CowsInTank = sample(100:200, 100, replace = TRUE),
+  MilkProduced = sample(500:1000, 100, replace = TRUE),
+  MilkPerCow = runif(100, 20, 30),
+  StrawYard = sample(50:100, 100, replace = TRUE),
+  Highs = sample(10:20, 100, replace = TRUE),
+  Trial1 = sample(5:15, 100, replace = TRUE),
+  Trial2 = sample(5:15, 100, replace = TRUE),
+  Low = sample(1:10, 100, replace = TRUE),
+  Hscc = sample(150:200, 100, replace = TRUE),
+  Scc = sample(200:300, 100, replace = TRUE),
+  Bs = runif(100, 3, 5),
+  Fat = runif(100, 3, 5),
+  Protein = runif(100, 3, 5)
+)
+
+# Create the interactive table
+table <- datatable(
+  Data,
+  colnames = c("ID", "Date", "Cows in Milk", "Cows in Tank", "Milk Produced", "Milk per Cow", "Straw Yard", "Highs", "Trial 1", "Trial 2", "Low", "Hscc", "Scc", "Bs", "Fat", "Protein"),
+  options = list(
+    dom = "Bfrtip",
+    buttons = list(
+      list(
+        extend = 'excel',
+        text = 'Download Data',
+        title = 'Dairy Production Data'
+      )
+    ),
+    paging = TRUE,
+    lengthMenu = c(10, 50, 100, 150, 200, 500, 1000, 1500),
+    pageLength = 10,
+    columnDefs = list(list(className = 'dt-center', targets = "_all")),
+    scrollY = FALSE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().container()).find('th, td').css({'color': 'black'});",  # Set text color to black
+      "$('.dt-button').css({'background-color': '#007a78', 'color': 'white'});",  # Style buttons
+      "}"
+    )
+  ),
+  extensions = "Buttons"
+) %>%
+  formatRound(columns = c("Fat", "Bs", "Protein", "MilkPerCow"), digits = 2)
+
+# Format the date column
+table <- formatDate(
+  table,
+  columns = 1,
+  method = "toDateString"
+)
+
+# Display the interactive table
+table
+
+
+```
+
+```{r}
+#| title: Dictionary
+
+# Read the Excel file and load the data from the second sheet
+Dictionary <- read_excel("C:/Users/WilliamBanda1/Documents/MRP/tidy_data.xlsx", sheet = 2)
+
+# Create the DataTable with the specified options
+datatable(
+  Dictionary,
+  options = list(
+    dom = "Bfrtip",
+    buttons = list(
+      list(
+        extend = 'excel',
+        text = 'Download Dictionary',
+        title = 'Dairy Data Dictionary'
+      )
+    ),
+    paging = TRUE,
+    pageLength = 10,
+    columnDefs = list(list(className = 'dt-center', targets = "_all")),
+    scrollY = FALSE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().container()).find('th, td').css({'color': 'black'});",  # Set text color to black
+      "$('.dt-button').css({'background-color': '#007a78', 'color': 'white'});",  # Style buttons
+      "}"
+    )
+  )
+)
+
+
+```
+
+
+
