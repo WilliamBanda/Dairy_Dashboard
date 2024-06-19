@@ -200,7 +200,7 @@ ggplot(Data, aes(x = year, y = fat)) +
 
 # Data
 
-[Download the data!]("tidy_data.xlsx")
+[Download the data!](https://github.com/RABBuffet/Dairy_Dashboard/raw/main/data/tidy_data.xlsx)
 
 ```{r}
 
