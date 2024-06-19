@@ -9,12 +9,7 @@ The data used in this dashboard is from the Harper Adams Future Farm Dairy Unit.
 ## Repository Contents
 
 - `dairy.xlsx`: This is the raw data file as received from the source.
-- `Tyding.R`: This is the code used for cleaning and preprocessing the raw data.
-- `tidy_data`: This is the cleaned and processed data files ready for analysis and visualization.
-- `InteractiveDashboard.qmd`: A Quarto Markdown file for creating a basic dashboard with essential visualizations and summaries.
-- `StaticDashboard.qmd`: A Quarto Markdown file for creating an advanced dashboard with more complex visualizations and interactive features.
-- `InteractiveDashboard.html`: The rendered HTML file for the basic dashboard.
-- `StaticDashboard.html`: The rendered HTML file for the advanced dashboard.
+- `baseline.qmd`: A Quarto Markdown file for creating a dashboard. 
 
 ## Usage
 
