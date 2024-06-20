@@ -44,15 +44,20 @@ suppressPackageStartupMessages({
 #| label: load-data
 #| message: false
 
+# read in the data
 Data <- read_excel("data/tidy_data.xlsx")
 Data <- Data %>%
   filter(format(as.Date(date), "%Y") %in% 2018:2023)
 Data$year <- factor(year(Data$date))
+
+# Filter a few outliers
 Data$protein[which(Data$protein>100)] <- NA
 Data$milk_per_cow[which(Data$milk_per_cow < 25)] <- NA
 Data$fat[which(Data$fat > 5)] <- NA
 
-mypal <- brewer.pal(7, "Set3")
+mypal <- c(brewer.pal(7, "Set3"), 
+           "#f9faeb", # accessible background
+           "#0A0A0A") # accessible font colour
 
 ```
 
@@ -111,8 +116,7 @@ avg_fat <- Data %>%
 :::
 
 # Dashboard
-## Row {height=20%}
-
+## Row {height=15%}
 
 ```{r}
 #| content: valuebox
@@ -127,6 +131,8 @@ list(
 ```{r}
 #| content: valuebox
 #| title: "Protein (%)"
+#| options:
+#|   title.font.size: 30
 
 list(
   color = mypal[3],
@@ -156,14 +162,14 @@ ggplot(Data, aes(x = year, y = milk_per_cow)) +
   labs(x = "Year", y = "Daily Milk (kg/cow/day)") +  
   theme_minimal() +
   theme(
-    plot.background = element_rect(fill = "#f9faeb", color = NA), 
-    panel.background = element_rect(fill = "#f9faeb", color = NA), 
+    plot.background = element_rect(fill = mypal[8], color = NA), 
+    panel.background = element_rect(fill = mypal[8], color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
-    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
-    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
-    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
-    axis.ticks = element_line(color = "#0A0A0A")  
+    axis.title.x = element_text(size = 14, color = mypal[9]), 
+    axis.title.y = element_text(size = 14, color = mypal[9]), 
+    axis.text.x = element_text(size = 12, color = mypal[9]),  
+    axis.text.y = element_text(size = 12, color = mypal[9]),  
+    axis.ticks = element_line(color = mypal[9])  
     )   
 
 
@@ -181,14 +187,14 @@ ggplot(Data, aes(x = year, y = protein)) +
   labs(x = "Year", y = "Protein (%)") +  
   theme_minimal() +
   theme(
-    plot.background = element_rect(fill = "#f9faeb", color = NA), 
-    panel.background = element_rect(fill = "#f9faeb", color = NA), 
+    plot.background = element_rect(fill = mypal[8], color = NA), 
+    panel.background = element_rect(fill = mypal[8], color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
-    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
-    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
-    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
-    axis.ticks = element_line(color = "#0A0A0A")  
+    axis.title.x = element_text(size = 14, color = mypal[9]), 
+    axis.title.y = element_text(size = 14, color = mypal[9]), 
+    axis.text.x = element_text(size = 12, color = mypal[9]),  
+    axis.text.y = element_text(size = 12, color = mypal[9]),  
+    axis.ticks = element_line(color = mypal[9])  
     )   
 
 ```
@@ -205,14 +211,14 @@ ggplot(Data, aes(x = year, y = fat)) +
   labs(x = "Year", y = "Fat (%)") +  
   theme_minimal() +
   theme(
-    plot.background = element_rect(fill = "#f9faeb", color = NA), 
-    panel.background = element_rect(fill = "#f9faeb", color = NA), 
+    plot.background = element_rect(fill = mypal[8], color = NA), 
+    panel.background = element_rect(fill = mypal[8], color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
-    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
-    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
-    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
-    axis.ticks = element_line(color = "#0A0A0A")  
+    axis.title.x = element_text(size = 14, color = mypal[9]), 
+    axis.title.y = element_text(size = 14, color = mypal[9]), 
+    axis.text.x = element_text(size = 12, color = mypal[9]),  
+    axis.text.y = element_text(size = 12, color = mypal[9]),  
+    axis.ticks = element_line(color = mypal[9])  
     )   
 
 ```

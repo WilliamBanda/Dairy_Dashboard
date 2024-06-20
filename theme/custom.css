@@ -9,7 +9,7 @@ body {
   background-color: #FAFAC8; // Light grey background for reduced glare
   color: #0A0A0A; // Darker text color for better contrast
   line-height: 1.6; // Increased line height for better readability
-  font-size: 1.1rem; // Slightly larger font size
+  font-size: 1.2rem; // Slightly larger font size
 }
 
 // Custom font for headings
@@ -17,6 +17,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'OpenDyslexic', Arial, sans-serif;
   font-weight: bold;
   margin-bottom: 1rem; // Extra space below headings
+  font-size: 1.2rem; // Slightly larger font size
 }
 
 // Styling for links
