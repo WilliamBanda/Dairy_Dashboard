@@ -27,6 +27,7 @@ options(repos = "https://cran.rstudio.com")
 # Suppress messages and warnings globally
 suppressPackageStartupMessages({
   library(tidyverse)
+  library(openxlsx)
   library(readxl)
   library(readr)
   library(dplyr)
@@ -48,6 +49,8 @@ Data <- Data %>%
   filter(format(as.Date(date), "%Y") %in% 2018:2023)
 Data$year <- factor(year(Data$date))
 Data$protein[which(Data$protein>100)] <- NA
+Data$milk_per_cow[which(Data$milk_per_cow < 25)] <- NA
+Data$fat[which(Data$fat > 5)] <- NA
 
 mypal <- brewer.pal(7, "Set3")
 
@@ -153,10 +156,16 @@ ggplot(Data, aes(x = year, y = milk_per_cow)) +
   labs(x = "Year", y = "Daily Milk (kg/cow/day)") +  
   theme_minimal() +
   theme(
+    plot.background = element_rect(fill = "#f9faeb", color = NA), 
+    panel.background = element_rect(fill = "#f9faeb", color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14)  
+    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
+    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
+    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
+    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
+    axis.ticks = element_line(color = "#0A0A0A")  
     )   
+
 
 ```
 
@@ -172,9 +181,14 @@ ggplot(Data, aes(x = year, y = protein)) +
   labs(x = "Year", y = "Protein (%)") +  
   theme_minimal() +
   theme(
+    plot.background = element_rect(fill = "#f9faeb", color = NA), 
+    panel.background = element_rect(fill = "#f9faeb", color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14)  
+    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
+    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
+    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
+    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
+    axis.ticks = element_line(color = "#0A0A0A")  
     )   
 
 ```
@@ -191,9 +205,14 @@ ggplot(Data, aes(x = year, y = fat)) +
   labs(x = "Year", y = "Fat (%)") +  
   theme_minimal() +
   theme(
+    plot.background = element_rect(fill = "#f9faeb", color = NA), 
+    panel.background = element_rect(fill = "#f9faeb", color = NA), 
     legend.position = "none",
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14)  
+    axis.title.x = element_text(size = 14, color = "#0A0A0A"), 
+    axis.title.y = element_text(size = 14, color = "#0A0A0A"), 
+    axis.text.x = element_text(size = 12, color = "#0A0A0A"),  
+    axis.text.y = element_text(size = 12, color = "#0A0A0A"),  
+    axis.ticks = element_line(color = "#0A0A0A")  
     )   
 
 ```
