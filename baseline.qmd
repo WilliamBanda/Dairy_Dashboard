@@ -178,7 +178,7 @@ ggplot(Data, aes(x = year, y = milk_per_cow)) +
 ### Column
 
 ```{r}
-#| title: "Does variation in Protein % looks fine?"
+#| title: "Does variation in Protein % look fine?"
 
 # Create the boxplot
 ggplot(Data, aes(x = year, y = protein)) +
