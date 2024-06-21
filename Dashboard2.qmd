@@ -1,0 +1,280 @@
+
+---
+title: "Dairy Production"
+format:
+  dashboard:
+    nav-buttons: [github]
+    github: https://github.com/WilliamBanda/Data-Dashboards-User-Perception
+theme: [Minty, theme/custom.scss]
+fig-width: 5
+fig-asp: 1
+params:
+  month:
+  year:
+  threshold_diff: 0.02
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+#| label: load-packages
+#| message: false
+#| warning: false
+#| include: false
+
+options(repos = "https://cran.rstudio.com")
+
+# Suppress messages and warnings globally
+suppressPackageStartupMessages({
+  install.packages("reshape2", quiet = TRUE)
+  install.packages(c("writexl", "viridis", "shiny", "ggplot2"), quiet = TRUE)
+  
+  library(tidyverse)
+  library(readr)
+  library(dplyr)
+  library(openxlsx)
+  library(ggplot2)
+  library(shiny)
+  library(writexl)
+  library(plotly)
+  library(reshape2)
+  library(readxl)
+  library(scales)
+  library(DT)
+  library(gt)
+  library(viridis)
+  library(lubridate)
+})
+
+```
+```{r}
+#| label: load-data
+#| message: false
+# read in the data
+Data <- read_excel("C:/Users/WilliamBanda1/Documents/MRP/tidy_data.xlsx")
+Data <- Data %>%
+  filter(format(as.Date(date), "%Y") %in% 2018:2023)
+Data$year <- factor(year(Data$date))
+
+# Filter a few outliers
+Data$protein[which(Data$protein>100)] <- NA
+Data$milk_per_cow[which(Data$milk_per_cow < 25)] <- NA
+Data$fat[which(Data$fat > 5)] <- NA
+
+```
+
+```{r}
+#| label: values
+#| results: hide
+
+# Calculate average milk per cow from 2018-2023
+avg_milk_per_cow <- Data %>%
+  summarize(avg_milk_per_cow = mean(milk_per_cow, na.rm = TRUE)) %>%
+  pull(avg_milk_per_cow) %>% round(digits = 1)
+
+# Calculate average protein % from 2018-2023
+avg_protein <- Data %>%
+  summarize(avg_protein = mean(protein, na.rm = TRUE)) %>%
+  pull(avg_protein) %>% round(digits = 1)
+
+# Calculate average fat from 2018-2023 and round to one decimal point
+avg_fat <- Data %>%
+  summarize(avg_fat = round(mean(fat, na.rm = TRUE), 1)) %>%
+  pull(avg_fat)
+
+```
+# About
+
+## Row {.flow}
+### column
+::: card
+::: card-header
+**About the Project**
+:::
+::: card-body
+**This project aims to improve farm data accessibility by assessing usability  and convenience.** The dairy production and milk quality data in this dashboard is from the Harper Adams Future Farm. 
+
+<br>
+<center>
+![](https://raw.githubusercontent.com/RABBuffet/Dairy_Dashboard/main/img/cow.webp){width=240 height=240}
+</center>
+
+:::
+:::
+
+### column
+::: card
+::: card-header
+
+**Suggestions**
+:::
+::: card-body
+**Step 1:** Click on the **Dashboard tab** and examine each graph, focusing on the questions. (This should take about 2-3 minutes)
+
+**Step 2:** Click on the **Data tab** and examine the data and variable explanations. (This should take just 1 minute or so)
+
+**Step 3:** Help us answer a few  **research questions** about your impressions of the data. (This should take just a few minutes)
+:::
+:::
+
+# Dashboard
+## Row {height=15%}
+
+```{r}
+#| content: valuebox
+#| title: "Daily Milk (kg/cow/day)"
+#| color: "#FF0000"  # Purple color (hex code)
+
+list(
+  value = avg_milk_per_cow
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Protein (%)"
+#| color: "#00FF00"  # Blue color (hex code)
+
+list(
+  value = avg_protein
+)
+```
+
+```{r}
+#| component: valuebox
+#| title: "Fat (%)"
+#| color: "#FFFF00"  # Golden yellow color (hex code)
+
+list(
+  value = avg_fat
+)
+```
+
+## Row {height=50%}
+### Column 
+
+```{r}
+#| title: "Is productivity improving in this herd?"
+
+# Create a color palette for unique colors
+color_palette <- c("#377EB8", "#E41A1C", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999")
+# Create a box plot for milk_per_cow by year
+p <- ggplot(Data, aes(x = factor(year), y = milk_per_cow, fill = factor(year))) +
+  geom_boxplot(outlier.shape = NA, coef = NULL) +  
+  labs(y = "Daily Milk (kg/cow/day)", fill = "Year") +  
+  theme_minimal() +
+  theme(
+    legend.position = "right",  
+    aspect.ratio = 5,  
+    axis.text.x = element_blank(),  
+    axis.title.x = element_blank()  
+  ) +
+  scale_fill_manual(values = color_palette) +
+  scale_y_continuous(breaks = c(27.5, 30.5, 32.5))  # Keep this line
+
+# Convert ggplot2 plot to interactive plotly visualization
+p_interactive <- ggplotly(p, tooltip = "text")
+
+# Customize interactive behavior and explicitly set y-axis
+p_interactive <- p_interactive %>%
+  layout(
+    hovermode = "closest",
+    yaxis = list(
+      tickvals = c(27.5, 30.5, 32.5),
+      ticktext = c("27.5", "30.5", "32.5"),
+      range = c(min(Data$milk_per_cow, na.rm = TRUE), max(Data$milk_per_cow, na.rm = TRUE))
+    )
+  )
+
+# Display the interactive plot
+p_interactive
+```
+
+### Column 
+```{r}
+#| title: "Does variation in Protein % look fine?"
+
+# Create a color palette for unique colors
+color_palette <- c("#377EB8", "#E41A1C", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999")
+
+# Create a box plot for protein percentage by year
+p <- Data %>%
+  filter(protein < 299) %>%
+  ggplot(aes(x = factor(year), y = protein, fill = factor(year))) +
+  geom_boxplot(outlier.shape = NA) +  
+  labs(y = "Protein (%)", fill = "Year") +  
+  theme_minimal() +
+  theme(
+    legend.position = "right", 
+    aspect.ratio = 5,  
+    axis.text.x = element_blank(),  
+    axis.title.x = element_blank()  
+  ) +
+  scale_fill_manual(values = color_palette)  
+# Convert ggplot2 plot to interactive plotly visualization
+p_interactive <- ggplotly(p, dynamicTicks = TRUE, tooltip = "text")
+
+# Customize interactive behavior
+p_interactive <- p_interactive %>%
+  layout(hovermode = "closest")
+
+# Display the interactive plot
+p_interactive
+```
+
+### column
+```{r}
+#| title: "Which years have large variation in Fat %?"
+
+# Create a color palette for unique colors
+color_palette <- c("#377EB8", "#E41A1C", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999")
+
+# Create a box plot for fat percentage by year
+p <- ggplot(Data, aes(x = factor(year), y = fat, fill = factor(year))) +
+  geom_boxplot(outlier.shape = NA) + 
+  labs(y = "Fat (%)", fill = "Year") +  
+  theme_minimal() +
+  theme(
+    legend.position = "right",  
+    aspect.ratio = 5,  
+    axis.text.x = element_blank(), 
+    axis.title.x = element_blank()  
+  ) +
+  scale_fill_manual(values = color_palette)  
+
+# Convert ggplot2 plot to interactive plotly visualization
+p_interactive <- ggplotly(p, dynamicTicks = TRUE, tooltip = "text")
+
+# Customize interactive behavior
+p_interactive <- p_interactive %>%
+  layout(hovermode = "closest")
+
+# Display the interactive plot
+p_interactive
+```
+
+# Data
+
+[Download the data!](https://github.com/RABBuffet/Dairy_Dashboard/raw/main/data/tidy_data.xlsx)
+```{r}
+
+
+# Create the interactive table
+table <- datatable(
+  Data[,c("milk_produced", "milk_per_cow","fat", "protein", "year")],
+  colnames = c("Milk Produced", "Milk per Cow","Fat", "Protein", "Year"),
+  options = list(
+    dom = "Bfrtip",
+    paging = TRUE,
+    lengthMenu = c(10, 50, 100, 150, 200, 500, 1000, 1500),
+    pageLength = 10,
+    columnDefs = list(list(className = 'dt-center', targets = "_all")),
+    scrollY = FALSE
+  )
+)
+
+# Display the interactive table
+table
+
+
+```
