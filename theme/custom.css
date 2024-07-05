@@ -1,0 +1,97 @@
+// Dyslexia-friendly SCSS Styles
+
+// Import Cerulean base theme
+@import "https://bootswatch.com/5/cerulean/bootstrap.min.css";
+
+// Base font settings
+body {
+  font-family: 'OpenDyslexic', Arial, sans-serif; // Using 'OpenDyslexic' if available, fallback to Arial
+  background-color: #FAFAC8; // Light grey background for reduced glare
+  color: #0A0A0A; // Darker text color for better contrast
+  line-height: 1.6; // Increased line height for better readability
+  font-size: 1.2rem; // Slightly larger font size
+}
+
+// Custom font for headings
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+  font-weight: bold;
+  margin-bottom: 1rem; // Extra space below headings
+  font-size: 1.2rem; // Slightly larger font size
+}
+
+// Styling for links
+a {
+  color: #007bff; // Blue color for links
+  text-decoration: underline; // Underlined for emphasis
+  &:hover {
+    color: #0056b3; // Darker blue on hover
+    text-decoration: none; // Remove underline on hover
+  }
+}
+
+// Button styles
+.btn {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+  background-color: #3498db; // Primary button color
+  color: white; // White text color
+  border-radius: 5px; // Rounded corners
+  padding: 10px 15px; // Increased padding
+  &:hover {
+    background-color: #2980b9; // Darker blue on hover
+  }
+}
+
+// Increase spacing between list items
+ul, ol {
+  margin-left: 2rem; // More indent for lists
+  line-height: 1.6; // Increased line height
+  margin-bottom: 1.5rem; // Space below lists
+}
+
+// Forms and inputs
+input, textarea {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+  font-size: 1.1rem;
+  padding: 10px; // Extra padding for inputs
+  margin-bottom: 1rem; // Space below input fields
+  border: 2px solid #bdc3c7; // Light grey border
+  border-radius: 5px; // Rounded corners
+}
+
+// Table styles
+table {
+  width: 100%; // Full width tables
+  border-collapse: collapse; // No gaps between cells
+  margin-bottom: 1.5rem; // Space below tables
+  th, td {
+    padding: 10px; // Padding inside cells
+    text-align: left; // Left-aligned text
+    border: 1px solid #dee2e6; // Light grey border
+  }
+  th {
+    background-color: #e9ecef; // Light grey background for header cells
+    font-weight: bold; // Bold text for header cells
+  }
+}
+
+// Adjustments for better readability
+p {
+  margin-bottom: 1.2rem; // Space between paragraphs
+}
+
+// Navbar adjustments
+.navbar {
+  background-color: #2c3e50; // Dark background for navbar
+  color: white; // White text
+  .navbar-brand, .nav-link {
+    font-family: 'OpenDyslexic', Arial, sans-serif;
+    color: white; // White text for links
+    &:hover {
+      color: #3498db; // Blue text on hover
+    }
+  }
+}
+
+// Import OpenDyslexic font if available
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');

@@ -1,20 +1,13 @@
-# Farm Data Management Project
-
 ## About this Project and Data
 
-This project aims to address challenges of farm data management through organizing data and improving data awareness and accessibility. The goal is to improve accessibility, usability, compatibility, and convenience for end users or other stakeholders.
+[Go to the dashboard](https://rabbuffet.github.io/Dairy_Dashboard/baseline.html)
 
-The data used in this dashboard is from the Harper Adams Future Farm Dairy Unit. The data contains dairy production and milk quality variables recorded on a daily basis from 2018 to 2023.
+This repo aims to improve a dashboard project
 
 ## Repository Contents
 
 - `dairy.xlsx`: This is the raw data file as received from the source.
-- `Tyding.R`: This is the code used for cleaning and preprocessing the raw data.
-- `tidy_data`: This is the cleaned and processed data files ready for analysis and visualization.
-- `InteractiveDashboard.qmd`: A Quarto Markdown file for creating a basic dashboard with essential visualizations and summaries.
-- `StaticDashboard.qmd`: A Quarto Markdown file for creating an advanced dashboard with more complex visualizations and interactive features.
-- `InteractiveDashboard.html`: The rendered HTML file for the basic dashboard.
-- `StaticDashboard.html`: The rendered HTML file for the advanced dashboard.
+- `baseline.qmd`: A Quarto Markdown file for creating a dashboard. 
 
 ## Usage
 
